@@ -456,7 +456,13 @@ configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
   (with-eval-after-load 'org
+    ;;Default Org-mode opens for every .org file
+    (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode))
+    ;;Org Home Directory
     (setq org-directory "~/Commonplace")
+    ;;Minimal Outline
+    (setq org-startup-indented t
+          org-hide-leading-stars t)
     ;; Agenda
     (setq org-agenda-files '("~/Commonplace/inbox.org"
                              "~/Commonplace/gtd.org"
@@ -478,7 +484,7 @@ before packages are loaded."
                                   ("c"               ; key
                                    "Courses"         ; name
                                    entry             ; type
-                                   (file+headline "~/Commonplace/.org" "Courses")  ; target
+                                   (file+headline "~/Commonplace/school.org" "Courses")  ; target
                                    "* %^{Course} %(org-set-tags)  :courses:\n:PROPERTIES:\n:Created: %U\n:END:\n%i\n%?"  ; template
                                    :prepend t        ; properties
                                    :empty-lines 1    ; properties
@@ -488,9 +494,10 @@ before packages are loaded."
                                   ("t" "Todo [inbox]" entry
                                    (file+headline "~/Commonplace/inbox.org" "Tasks")
                                    "* TODO %i%?")
-                                  ("T" "Tickler" entry
-                                   (file+headline "~/Commonplace/tickler.org" "Tickler")
-                                   "* %i%? \n %U"))
+                                  ;;("T" "Tickler" entry
+                                   ;;(file+headline "~/Commonplace/tickler.org" "Tickler")
+                                   ;;"* %i%? \n %U")
+          )
     ;;Refile
     (setq org-refile-targets '((nil :maxlevel . 9)
                                (org-agenda-files :maxlevel . 9)))
@@ -512,7 +519,6 @@ before packages are loaded."
                             ("drill"     . ?D)
                             ("errands"   . ?e)
                             ("films"     . ?f)
-                            ("gubby"     . ?g)
                             ("home"      . ?h)
                             ("idea"      . ?i)
                             ("job"       . ?j)
@@ -523,9 +529,30 @@ before packages are loaded."
                             ("personal"  . ?p)
                             ("project"   . ?P)
                             ("reference" . ?r) ;; temporary
-                            ("story"     . ?s)
                             ("work"      . ?w)
                             ("cash"      . ?$))))
+    (mapcar (lambda (tag)
+              (list tag (length (org-map-entries t tag nil))))
+            '("article"
+              "books"
+              "courses"
+              "code"
+              "card"
+              "drill"
+              "errands"
+              "films"
+              "home"
+              "idea"
+              "job"
+              "ledger"
+              "meeting"
+              "note"
+              "online"
+              "personal"
+              "project"
+              "reference"
+              "work"
+              "cash"))
     ;;Keybindings and shortcuts
     (use-package org
       :ensure org
@@ -597,6 +624,36 @@ before packages are loaded."
       (add-to-list 'org-structure-template-alist '("s" "#+BEGIN_SRC ?\n#+END_SRC\n"))
       (add-to-list 'org-structure-template-alist '("t" "#+TITLE: ?"))
       (add-to-list 'org-structure-template-alist '("v" "#+BEGIN_VERBATIM\n?\n#+END_VERBATIM")))
+    ;;Org-Drill
+    (use-package org-drill
+      :defer t
+      :commands (org-drill
+                 org-drill-tree
+                 org-drill-directory)
+      :init
+      (setq org-drill-maximum-items-per-session 50
+            org-drill-maximum-duration 20   ; 20 minutes
+            org-drill-use-visible-cloze-face-p t
+            org-drill-add-random-noise-to-intervals-p t
+            org-drill-hint-separator "||"
+            org-drill-left-cloze-delimiter "<["
+            org-drill-right-cloze-delimiter "]>"
+            org-drill-learn-fraction 0.25
+            org-drill-cram-hours 2
+            org-drill-leech-method 'warn)
+      :config
+      (progn
+        (add-to-list 'org-modules 'org-drill)))
+    ;;Org-bullets
+    (use-package org-bullets
+      :ensure t
+      :config
+      (progn
+        (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))))
+    ;;Org-download
+    (use-package org-download
+      :ensure t
+      :defer 2)
     )
   )
 

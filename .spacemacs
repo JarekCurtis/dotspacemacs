@@ -466,15 +466,40 @@ before packages are loaded."
     ;; Agenda
     (setq org-agenda-files '("~/Commonplace/inbox.org"
                              "~/Commonplace/gtd.org"
-                             "~/Commonplace/tickler.org"))
+                             "~/Commonplace/tickler.org"
+                             "~/Commonplace/references/education.org"
+                             "~/Commonplace/references/business.org"))
     ;;Capture
+    ;;The headline in each file will be plural nouns, the file names as singular nouns
     (setq org-capture-templates '(
                                   ;; To capture tons of errands
+                                  ("C"               ; key
+                                   "Chore"           ; name
+                                   entry             ; type
+                                   (file+headline "~/Commonplace/gtd.org" "Chores")  ; target
+                                   "* TODO %^{Todo} %(org-set-tags)  :chore:\n:PROPERTIES:\n:Created: %U\n:END:\n%i\n%?"  ; template
+                                   :prepend t        ; properties
+                                   :empty-lines 1    ; properties
+                                   :created t        ; properties
+                                   :kill-buffer t)   ; properties
+
+                                  ;; To capture tons of errands
                                   ("e"               ; key
-                                   "Errands"         ; name
+                                   "Errand"          ; name
                                    entry             ; type
                                    (file+headline "~/Commonplace/gtd.org" "Errands")  ; target
-                                   "* TODO %^{Todo} %(org-set-tags)  :errands:\n:PROPERTIES:\n:Created: %U\n:END:\n%i\n%?"  ; template
+                                   "* TODO %^{Todo} %(org-set-tags)  :errand:\n:PROPERTIES:\n:Created: %U\n:END:\n%i\n%?"  ; template
+                                   :prepend t        ; properties
+                                   :empty-lines 1    ; properties
+                                   :created t        ; properties
+                                   :kill-buffer t)   ; properties
+                                  
+                                  ;; To capture tons of Emacs TODOS 
+                                  ("E"               ; key
+                                   "Emacs Task"      ; name
+                                   entry             ; type
+                                   (file+headline "~/Commonplace/gtd.org" "Emacs")  ; target
+                                   "* TODO %^{Todo} %(org-set-tags)  :emacs:\n:PROPERTIES:\n:Created: %U\n:END:\n%i\n%?"  ; template
                                    :prepend t        ; properties
                                    :empty-lines 1    ; properties
                                    :created t        ; properties
@@ -482,27 +507,55 @@ before packages are loaded."
 
                                   ;; To capture things regarding my course
                                   ("c"               ; key
-                                   "Courses"         ; name
+                                   "Course"          ; name
                                    entry             ; type
-                                   (file+headline "~/Commonplace/school.org" "Courses")  ; target
-                                   "* %^{Course} %(org-set-tags)  :courses:\n:PROPERTIES:\n:Created: %U\n:END:\n%i\n%?"  ; template
+                                   (file+headline "~/Commonplace/references/education.org" "Courses")  ; target
+                                   "* %^{Course} %(org-set-tags)  :course:\n:PROPERTIES:\n:Created: %U\n:END:\n%i\n%?"  ; template
                                    :prepend t        ; properties
                                    :empty-lines 1    ; properties
                                    :created t        ; properties
-                                   :kill-buffer t)) ; properties
+                                   :kill-buffer t)   ; properties
 
-                                  ("t" "Todo [inbox]" entry
-                                   (file+headline "~/Commonplace/inbox.org" "Tasks")
-                                   "* TODO %i%?")
-                                  ;;("T" "Tickler" entry
-                                   ;;(file+headline "~/Commonplace/tickler.org" "Tickler")
-                                   ;;"* %i%? \n %U")
+          ;; To capture things regarding business
+          ("b"               ; key
+           "Business"        ; name
+           entry             ; type
+           (file+headline "~/Commonplace/references/business.org" "Businesses")  ; target
+           "* %(org-set-tags)  :business:\n:PROPERTIES:\n:Created: %U\n:END:\n%i\n%?"  ; template
+           :prepend t        ; properties
+           :empty-lines 1    ; properties
+           :created t        ; properties
+           :kill-buffer t)   ; properties
+
+          ;; To capture things regarding recipes
+          ("r"               ; key
+           "Recipe"          ; name
+           entry             ; type
+           (file+headline "~/Commonplace/references/food.org" "Recipes")  ; target
+           "* %(org-set-tags)  :recipe:\n:PROPERTIES:\n:Created: %U\n:END:\n%i\n%?"  ; template
+           :prepend t        ; properties
+           :empty-lines 1    ; properties
+           :created t        ; properties
+           :kill-buffer t)   ; properties
+
+          ;; To capture things I want to do for other people
+          ("s"               ; key
+           "Social Task"     ; name
+           entry             ; type
+           (file+headline "~/Commonplace/tickler.org" "Social Tasks")  ; target
+           "* TODO %(org-set-tags)  :social:\n:PROPERTIES:\n:Created: %U\n:END:\n%i\n%?"  ; template
+           :prepend t        ; properties
+           :empty-lines 1    ; properties
+           :created t        ; properties
+           :kill-buffer t)   ; properties
+          )
           )
     ;;Refile
     (setq org-refile-targets '((nil :maxlevel . 9)
                                (org-agenda-files :maxlevel . 9)))
     (setq org-refile-use-outline-path t
           org-outline-path-complete-in-steps nil)
+    (setq org-refile-allow-creating-parent-nodes 'confirm)
 
     ;;Todo
     (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "WAITING(w)" "IN PROGRESS(p)" "|" "DONE(d)" "CANCELLED(c)")))
@@ -511,14 +564,17 @@ before packages are loaded."
           org-agenda-span 'fortnight
           org-agenda-skip-scheduled-if-deadline-is-shown t)
     ;;Tagging
+    ;;Set all tags to be singular nouns
     (setq org-tag-alist (quote (("article"   . ?a) ;; temporary
-                            ("books"     . ?b)
-                            ("courses"   . ?c) ;; temporary
-                            ("code"      . ?C)
+                            ("business" . ?b)
+                            ("book"     . ?B)
+                            ("course"   . ?c) ;; temporary
+                            ("chore"      . ?C)
                             ("card"      . ?d)
                             ("drill"     . ?D)
-                            ("errands"   . ?e)
-                            ("films"     . ?f)
+                            ("errand"   . ?e)
+                            ("emacs" . ?E)
+                            ("film"     . ?f)
                             ("home"      . ?h)
                             ("idea"      . ?i)
                             ("job"       . ?j)
@@ -529,18 +585,22 @@ before packages are loaded."
                             ("personal"  . ?p)
                             ("project"   . ?P)
                             ("reference" . ?r) ;; temporary
+                            ("recipe" . ?R)
+                            ("social" . ?s)
                             ("work"      . ?w)
                             ("cash"      . ?$))))
     (mapcar (lambda (tag)
               (list tag (length (org-map-entries t tag nil))))
             '("article"
-              "books"
-              "courses"
-              "code"
+              "book"
+              "business"
+              "course"
+              "chore"
               "card"
               "drill"
-              "errands"
-              "films"
+              "errand"
+              "emacs"
+              "film"
               "home"
               "idea"
               "job"
@@ -550,7 +610,9 @@ before packages are loaded."
               "online"
               "personal"
               "project"
+              "recipe"
               "reference"
+              "social"
               "work"
               "cash"))
     ;;Keybindings and shortcuts
@@ -608,7 +670,7 @@ before packages are loaded."
       (add-to-list 'org-structure-template-alist '("X" "#+EXCLUDE_TAGS: reveal?"))
       (add-to-list 'org-structure-template-alist '("a" "#+AUTHOR: ?"))
       (add-to-list 'org-structure-template-alist '("c" "#+CAPTION: ?"))
-      (add-to-list 'org-structure-template-alist '("d" "#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \\n:nil ^:t arch:headline\n#+OPTIONS: author:t email:nil e:t f:t inline:t creator:nil d:nil date:t\n#+OPTIONS: toc:nil num:nil tags:nil todo:nil p:nil pri:nil stat:nil c:nil d:nil\n#+LATEX_HEADER: \\usepackage[margin=2cm]{geometry}\n#+LANGUAGE: en\n\n#+REVEAL_TRANS: slide\n#+REVEAL_THEME: white\n#+REVEAL_ROOT: file:///Users/sriramkswamy/Documents/workspace/github/reveal.js\n\n?"))
+;;Not sure about this one      (add-to-list 'org-structure-template-alist '("d" "#+OPTIONS: ':nil *:t -:t ::t <:t H:3 \\n:nil ^:t arch:headline\n#+OPTIONS: author:t email:nil e:t f:t inline:t creator:nil d:nil date:t\n#+OPTIONS: toc:nil num:nil tags:nil todo:nil p:nil pri:nil stat:nil c:nil d:nil\n#+LATEX_HEADER: \\usepackage[margin=2cm]{geometry}\n#+LANGUAGE: en\n\n#+REVEAL_TRANS: slide\n#+REVEAL_THEME: white\n#+REVEAL_ROOT: file:///Users/jarek/Commonplace/config"))
       (add-to-list 'org-structure-template-alist '("e" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC"))
       (add-to-list 'org-structure-template-alist '("f" "#+TAGS: @?"))
       (add-to-list 'org-structure-template-alist '("h" "#+BEGIN_HTML\n?\n#+END_HTML\n"))
@@ -688,6 +750,9 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   (quote
+    ("~/Commonplace/inbox.org" "~/Commonplace/gtd.org" "~/Commonplace/tickler.org" "~/Commonplace/business.org")))
  '(package-selected-packages
    (quote
     (org-projectile org-category-capture org-present org-pomodoro alert log4e gntp org-mime org-download org-brain htmlize helm-org-rifle gnuplot evil-org ws-butler writeroom-mode winum which-key volatile-highlights vi-tilde-fringe uuidgen use-package treemacs-projectile treemacs-evil toc-org symon string-inflection spaceline-all-the-icons restart-emacs request rainbow-delimiters popwin persp-mode pcre2el password-generator paradox overseer org-plus-contrib org-bullets open-junk-file nameless move-text macrostep lorem-ipsum link-hint indent-guide hungry-delete hl-todo highlight-parentheses highlight-numbers highlight-indentation helm-xref helm-themes helm-swoop helm-purpose helm-projectile helm-mode-manager helm-make helm-flx helm-descbinds helm-ag google-translate golden-ratio font-lock+ flx-ido fill-column-indicator fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-escape evil-ediff evil-cleverparens evil-args evil-anzu eval-sexp-fu elisp-slime-nav editorconfig dumb-jump dotenv-mode doom-modeline diminish define-word counsel-projectile column-enforce-mode clean-aindent-mode centered-cursor-mode auto-highlight-symbol auto-compile aggressive-indent ace-link ace-jump-helm-line))))
